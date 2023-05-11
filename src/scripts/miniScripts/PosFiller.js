@@ -27,6 +27,7 @@ const listeners = [
   },
   { // pos
     onKeyword(keyword, sym) {
+      Chat.log(keyword)
       if (keyword !== 'pos') return
       const {x, y, z} = Player.getPlayer().getBlockPos() // add .toPos3D() in 1.8.4
       if (sym === ',') return `${x}, ${y}, ${z}`
@@ -58,6 +59,39 @@ const listeners = [
   // }
 ]
 
+/*
+ * setup class strings
+ * here so forge and fabric will work with the same script
+*/
+
+let InputC, InputCF, SuggestorWindowC, SuggestorWindowCF, SuggestionWindowC, ChatFieldCF, ChangedListenerC, ChangedListenerCF, TextWidth1, TextWidth2, ISMethod
+
+if (Client.mcVersion().includes("fabric")) {
+    InputC = 'net.minecraft.class_408'
+    InputCF = 'field_21616'
+    SuggestorWindowC = 'net.minecraft.class_4717'
+    SuggestorWindowCF = 'field_21612'
+    SuggestionWindowC = 'net.minecraft.class_4717$class_464'
+    ChatFieldCF = 'field_2382'
+    ChangedListenerC = 'net.minecraft.class_342'
+    ChangedListenerCF = 'field_2088'
+    TextWidth1 = 'field_1772'
+    TextWidth2 = 'method_1727'
+    ISMethod = 'method_23933'
+} else {   
+    InputC = 'net.minecraft.client.gui.screens.ChatScreen'
+    InputCF = 'f_95577_'
+    SuggestorWindowC = 'net.minecraft.client.gui.components.CommandSuggestions'
+    SuggestorWindowCF = 'f_93866_'
+    SuggestionWindowC = 'net.minecraft.client.gui.components.CommandSuggestions$SuggestionsList'
+    ChatFieldCF = 'f_95573_'
+    ChangedListenerC = 'net.minecraft.client.gui.components.EditBox'
+    ChangedListenerCF = 'f_94089_'
+    TextWidth1 = 'f_91062_'
+    TextWidth2 = 'm_92895_'
+    ISMethod = 'm_93922_'
+}
+
 /** @type {OpenChatScreenListener[]} */
 const onOpenChatScreens = []
 /** @type {ChangeListener[]} */
@@ -72,14 +106,14 @@ listeners.forEach(l => {
 
 const StringRange = Java.type('com.mojang.brigadier.context.StringRange')
 const mcSuggestion = Java.type('com.mojang.brigadier.suggestion.Suggestion')
-const InputSuggestorF  = getF(Java.type('net.minecraft.class_408'),  'field_21616')
-const suggestorWindowF = getF(Java.type('net.minecraft.class_4717'), 'field_21612')
-const SuggestionWindow = getF(Java.type('net.minecraft.class_4717$class_464').class.getDeclaredConstructors()[0])
-const chatFieldF       = getF(Java.type('net.minecraft.class_408'),  'field_2382')
-const changedListenerF = getF(Java.type('net.minecraft.class_342'),  'field_2088')
+const InputSuggestorF  = getF(Java.type(InputC),  InputCF)
+const suggestorWindowF = getF(Java.type(SuggestorWindowC), SuggestorWindowCF)
+const SuggestionWindow = getF(Java.type(SuggestionWindowC).class.getDeclaredConstructors()[0])
+const chatFieldF       = getF(Java.type(InputC),  ChatFieldCF)
+const changedListenerF = getF(Java.type(ChangedListenerC),  ChangedListenerCF)
 
 /** @type {(text: string) => number} */
-const getTextWidth = Client.getMinecraft().field_1772.method_1727
+const getTextWidth = Client.getMinecraft()[TextWidth1][TextWidth2]
 
 let currentText = ''
 
@@ -155,7 +189,7 @@ function triggerSuggest(screen, input, text) {
     list,
     false // narrateFirstSuggestion
   ))
-  InputSuggestor.method_23933(true) // .setWindowActive()
+  InputSuggestor[ISMethod](true) // .setWindowActive()
 }
 
 /**
