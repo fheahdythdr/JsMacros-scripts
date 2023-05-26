@@ -1,13 +1,29 @@
 
 // useful multi-purpose module
 
-const StringNbtReader = Java.type('net.minecraft.class_2522')
-const ItemStack       = Java.type('net.minecraft.class_1799')
-const ItemStackHelper = Java.type('xyz.wagyourtail.jsmacros.client.api.helpers.ItemStackHelper')
-const Identifier      = Java.type('net.minecraft.class_2960')
-const ItemRegistry    = Java.type('net.minecraft.class_2378').field_11142
+let Identifier
+let ItemRegistry
+let StringNbtReader
+let ItemStack
+let InvScreen
 
-const InvScreen = Java.type('net.minecraft.class_490')
+if (Client.mcVersion().includes("fabric")) {
+    Identifier      = Java.type('net.minecraft.class_2960')
+    ItemRegistry    = Java.type('net.minecraft.class_2378').field_11142
+    StringNbtReader = Java.type('net.minecraft.class_2522')
+    ItemStack       = Java.type('net.minecraft.class_1799')
+    InvScreen 		= Java.type('net.minecraft.class_490')
+} else {   
+    Identifier      = Java.type('net.minecraft.resources.ResourceLocation')
+    ItemRegistry    = Java.type('net.minecraft.core.Registry').f_122827_
+    StringNbtReader = Java.type('net.minecraft.nbt.TagParser')
+    ItemStack       = Java.type('net.minecraft.world.item.ItemStack')
+    InvScreen 		= Java.type('net.minecraft.gui.screens.inventory.InventoryScreen')
+}
+
+
+const ItemStackHelper = Java.type('xyz.wagyourtail.jsmacros.client.api.helpers.ItemStackHelper')
+
 const Inventory = Java.type('xyz.wagyourtail.jsmacros.client.api.classes.Inventory')
 
 const Pos3D = Java.type('xyz.wagyourtail.jsmacros.client.api.sharedclasses.PositionCommon$Pos3D')
