@@ -257,7 +257,7 @@ class Util {
    * @param {number} timeout 
    * @returns {UtilWfePromise<E>}
    */
-  waitForEvent(event, condition, callback, timeout = 600) {
+  waitForEvent(event, condition, callback, timeout = -1) {
     const cb = {
       condition,
       callback,
